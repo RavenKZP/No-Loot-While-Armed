@@ -1,9 +1,11 @@
+#include "Events.h"
 #include "logger.h"
 #include "Hooks.h"
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
         Hooks::Install();
+		SKSE::GetCrosshairRefEventSource()->AddEventSink(EventSink::GetSingleton());
     }
     if (message->type == SKSE::MessagingInterface::kNewGame || message->type == SKSE::MessagingInterface::kPostLoadGame) {
         // Post-load

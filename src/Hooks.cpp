@@ -1,112 +1,122 @@
 #include "Hooks.h"
-#include "Settings.h"
 #include "Utils.h"
+#include "Animation.h"
 
 namespace Hooks {
 
     void Install() {
-        ActivateHook<RE::AlchemyItem>::InstallHook();
-        ActivateHook<RE::IngredientItem>::InstallHook();
-        ActivateHook<RE::ScrollItem>::InstallHook();
-
-        ActivateHook<RE::TESAmmo>::InstallHook();
-        ActivateHook<RE::TESNPC>::InstallHook();
-        ActivateHook<RE::TESFlora>::InstallHook();
-        ActivateHook<RE::TESFurniture>::InstallHook();
-        ActivateHook<RE::TESKey>::InstallHook();
-        ActivateHook<RE::TESSoulGem>::InstallHook();
-
-        ActivateHook<RE::TESObjectACTI>::InstallHook();
-        ActivateHook<RE::TESObjectARMO>::InstallHook();
-        ActivateHook<RE::TESObjectBOOK>::InstallHook();
-        ActivateHook<RE::TESObjectCONT>::InstallHook();
-        ActivateHook<RE::TESObjectDOOR>::InstallHook();
-        ActivateHook<RE::TESObjectLIGH>::InstallHook();
-        ActivateHook<RE::TESObjectMISC>::InstallHook();
-        ActivateHook<RE::TESObjectTREE>::InstallHook();
-        ActivateHook<RE::TESObjectWEAP>::InstallHook();
 
         // Unused as Can't get animations
         //PlayerUpdateHook::InstallHook();
 
         RE::FormType JustForReferenceToAllTypes;
 
+        auto& trampoline = SKSE::GetTrampoline();
+        constexpr size_t size_per_hook = 14;
+	    trampoline.create(size_per_hook*1);
+        const REL::Relocation<std::uintptr_t> target3{REL::RelocationID(67315, 68617)};
+        InputHook::func = trampoline.write_call<5>(target3.address() + 0x7B, InputHook::thunk);
+
         logger::info("Hooks Installed");
     }
 
-    template <class T>
-    void ActivateHook<T>::InstallHook() {
-        REL::Relocation<std::uintptr_t> vTable(T::VTABLE[0]);
-        func = vTable.write_vfunc(0x37, &ActivateHook::thunk);
-    }
+    bool OnActivate()
+    {
+		// TODO: needs refactoring
 
-    void PlayerUpdateHook::InstallHook() {
-        REL::Relocation<std::uintptr_t> vTable(RE::PlayerCharacter::VTABLE[0]);
-        func = vTable.write_vfunc(0xAD, &PlayerUpdateHook::thunk);
-    }
-
-    template <class T>
-    bool ActivateHook<T>::thunk(RE::TESBoundObject* a_this, RE::TESObjectREFR* a_targetRef,
-                                RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object,
-                                std::int32_t a_targetCount) {
-        
-        if (a_this->Is(RE::FormType::Weapon)) {
-            logger::trace("Its a Weapon");
-        }
-        if (a_this->Is(RE::FormType::NPC)) {
-            logger::trace("Its a NPC");
-        }
-
-        if (a_targetRef && a_activatorRef) {
+		const auto player = RE::PlayerCharacter::GetSingleton();
+		const auto a_activatorRef = player;
+        if (const auto a_targetRef = crosshair_ref) {
             if (const auto actor = a_activatorRef->As<RE::Actor>()) {
-                if (!actor->IsPlayerRef()) {
-                    return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
-                }
+                if (actor->IsPlayerRef()) {
+			        logger::trace("a_targetRef {}", a_targetRef->GetName());
 
-                if (a_this->Is(RE::FormType::NPC)) {
-                    if (!a_targetRef->IsDead()) {
-                        logger::trace("{} is not dead", a_targetRef->GetName());
-                        if (actor->IsSneaking()) {
+                    if (a_targetRef->As<RE::Actor>()) {
+                        if (!a_targetRef->IsDead()) {
+                            logger::trace("{} is not dead", a_targetRef->GetName());
+                            if (actor->IsSneaking()) {
+                                logger::trace("No Loot While Armed");
+                                return false;
+                            }
+                            return true;
+                        }
+                    }
+                    logger::trace("a_targetRef {}", a_targetRef->GetName());
+                    if (const auto actorState = actor->AsActorState()) {
+                        if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
                             logger::trace("No Loot While Armed");
+                            if (!actor->IsInCombat()) {
+							    Utils::listenActionEvent.store(true);
+                                actor->DrawWeaponMagicHands(false);
+                                AnimationEventSink* eventSink = GetOrCreateEventSink();
+	                            player->AddAnimationGraphEventSink(eventSink);
+                            }
                             return false;
                         }
-                        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
-                    }
-                }
-                logger::trace("a_targetRef {}", a_targetRef->GetName());
-                if (const auto actorState = actor->AsActorState()) {
-                    if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
-                        logger::trace("No Loot While Armed");
-                        if (!actor->IsInCombat()) {
-                            actor->DrawWeaponMagicHands(false);
-                            Utils::SetActivationEvent(a_this, a_targetRef, a_activatorRef, a_arg3, a_object,
-                                                      a_targetCount);
-                        }
-                        return false;
                     }
                 }
             }
         }
-        logger::trace("Call original");
-        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        return true;
     }
 
-    void PlayerUpdateHook::thunk(RE::PlayerCharacter* a_actor, float a_delta) {
-        if (!a_actor) {
-            return func(a_actor, a_delta);
+    void InputHook::thunk(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_event)
+    {
+		// TODO: make sure only relevant activations are blocked! (e.g. only relevant forms. not in menus. not sure if possible anyway)
+
+        if (!a_dispatcher || !a_event || !crosshair_ref) {
+		    return func(a_dispatcher, a_event);
+	    }
+
+        auto first = *a_event;
+        auto last = *a_event;
+        size_t length = 0;
+
+        for (auto current = *a_event; current; current = current->next) {
+            if (ProcessInput(current)) {
+                if (current != last) {
+                    last->next = current->next;
+                } else {
+                    last = current->next;
+                    first = current->next;
+                }
+            } else {
+                last = current;
+                ++length;
+            }
         }
-        if (Utils::SavedActivationEvent.self_this) {
-            if (const RE::ActorState* actorState = a_actor->AsActorState()) {
-                if (actorState->GetWeaponState() == RE::WEAPON_STATE::kSheathed) {
-                    logger::trace("kSheathed");
-                    Utils::ActivationEvent act = Utils::GetActivationEvent();
-                    // Looks like calling this dont trigger animations :(
-                    act.self_this->Activate(act.targetRef, act.activatorRef, act.arg3, act.object, act.targetCount);
-                    Utils::ResetActivationEvent();
+
+        if (length == 0) {
+            constexpr RE::InputEvent* const dummy[] = {nullptr};
+            func(a_dispatcher, dummy);
+        } else {
+            RE::InputEvent* const e[] = {first};
+            func(a_dispatcher, e);
+        }
+    }
+
+    bool InputHook::ProcessInput(RE::InputEvent* event)
+    {
+		bool block = false;
+		if (const auto button_event = event->AsButtonEvent()) {
+            if (button_event->userEvent == RE::UserEvents::GetSingleton()->activate) {
+                if (button_event->IsDown()) {
+				    if (!OnActivate()) {
+					    block = true;
+					    blocked.store(true);
+                    }
+                }
+                else if (blocked.load()) {
+                    if (button_event->IsUp()) {
+						blocked.store(false);
+                    }
+                    else {
+						block = true;
+                    }
                 }
             }
         }
-        
-        return func(a_actor, a_delta);
+        return block;
     }
+
 }
