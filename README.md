@@ -1,24 +1,10 @@
-#### WINDOWS ENVIRONMENT VARIABLES TO SET
 
-1. **`COMMONLIB_SSE_FOLDER`**: The path to your clone of Commonlib.
-2. **`VCPKG_ROOT`**: The path to your clone of [vcpkg](https://github.com/microsoft/vcpkg).
-3. (optional) **`SKYRIM_FOLDER`**: path of your Skyrim Special Edition folder.
-4. (optional) **`SKYRIM_MODS_FOLDER`**: path of the folder where your mods are.
+No Loot While Armed SKSE Plugin:
+For Skyrim SE/AE
+Nexus modpage: [nexus](https://www.nexusmods.com/skyrimspecialedition/mods/) TBD
 
-#### THINGS TO EDIT
+Author: RavenKZP
+With: Quantumyilmaz and SkyrimThiago
 
-1. In LICENSE:
-- **`YEAR`**
-- **`YOURNAME`**
-2. CMakeLists.txt
-- **`AUTHORNAME`**
-- **`MDDNAME`**
-- (optional) Your plugin version. Default: `0.1.0.0`
-3. vcpkg.json
-- **`name`**: Your plugin's name.
-- **`version-string`**: Your plugin version. Default: `0.1.0.0`
-
-#### FEATURES
-Automatically imports:
-- [CLibUtil](https://github.com/powerof3/CLibUtil) by powerof3
-- [SKSE Menu Framework](https://www.nexusmods.com/skyrimspecialedition/mods/120352) by Thiago099
+Check out our Patreon with [Quantumyilmaz](https://next.nexusmods.com/profile/Quantumyilmaz), [SkyrimThiago](https://next.nexusmods.com/profile/SkyrimThiago?gameId=1704), and [RavenKZP](https://next.nexusmods.com/profile/RavenKZP)!
+Join us over our [Discord](https://www.discord.gg/9cbZ5KPqQb) server!
