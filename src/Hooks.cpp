@@ -102,17 +102,12 @@ namespace Hooks {
             if (button_event->userEvent == RE::UserEvents::GetSingleton()->activate) {
                 if (button_event->IsDown()) {
 				    if (!OnActivate()) {
+						logger::trace("Blocked Activate Event");
 					    block = true;
-					    blocked.store(true);
+                        blocked.store(true);
                     }
-                }
-                else if (blocked.load()) {
-                    if (button_event->IsUp()) {
-						blocked.store(false);
-                    }
-                    else {
-						block = true;
-                    }
+                } else if (blocked.load()) {
+					block = true;
                 }
             }
         }

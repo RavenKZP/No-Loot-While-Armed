@@ -8,7 +8,7 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 	//logger::info("AnimationEventSink::ProcessEvent: {} {}", a_event->tag, a_event->payload);
 	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "tailMTIdle") {
 		CleanupAnimationEvent(this);
-		SKSE::GetTaskInterface()->AddTask([]() {
+		//SKSE::GetTaskInterface()->AddTask([]() {
 			if (const auto ref = Hooks::crosshair_ref) {
 				const auto player = RE::PlayerCharacter::GetSingleton();
 				const auto a_obj = ref->GetBaseObject();
@@ -26,6 +26,8 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 							if (activate_handler->CanProcess(button_event)) {
 								logger::trace("Can process button event");
 							    RE::BSInputEventQueue::GetSingleton()->PushOntoInputQueue(button_event);
+							    RE::BSInputEventQueue::GetSingleton()->AddButtonEvent(button_event->device.get()
+									, button_event->idCode, 1.f, 0.005f);
 							    RE::BSInputEventQueue::GetSingleton()->AddButtonEvent(button_event->device.get()
 									, button_event->idCode, 0.f, 0.01f);
 								//activate_handler->ProcessButton(button_event,player_controls_data);
@@ -53,8 +55,9 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 				logger::trace("No target ref");
 			}
 			Utils::listenActionEvent.store(false);
-		});
+		//});
     }
+	Hooks::blocked.store(false);
 	return RE::BSEventNotifyControl::kContinue;
 }
 
