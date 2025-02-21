@@ -8,6 +8,7 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 	//logger::info("AnimationEventSink::ProcessEvent: {} {}", a_event->tag, a_event->payload);
 	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "IdleStop") {
 		CleanupAnimationEvent(this);
+	    Hooks::blocked.store(false);
 		//SKSE::GetTaskInterface()->AddTask([]() {
 			if (const auto ref = Hooks::crosshair_ref) {
 				const auto player = RE::PlayerCharacter::GetSingleton();
@@ -57,7 +58,6 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 			Utils::listenActionEvent.store(false);
 		//});
     }
-	Hooks::blocked.store(false);
 	return RE::BSEventNotifyControl::kContinue;
 }
 
