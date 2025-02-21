@@ -23,7 +23,7 @@ namespace Hooks {
 
     bool OnActivate()
     {
-		// TODO: needs refactoring
+		// TODO: needs refactoring. dont think all the logic is correct.
 
 		const auto player = RE::PlayerCharacter::GetSingleton();
 		const auto a_activatorRef = player;

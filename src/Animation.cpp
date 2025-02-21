@@ -8,40 +8,42 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "IdleStop") {
 		CleanupAnimationEvent(this);
 	    Hooks::blocked.store(false);
-		if (const auto ref = Hooks::crosshair_ref) {
-			const auto player = RE::PlayerCharacter::GetSingleton();
+		if (MCP::auto_activate) {
+		    if (const auto ref = Hooks::crosshair_ref) {
+			    const auto player = RE::PlayerCharacter::GetSingleton();
 
-			const auto player_controls = RE::PlayerControls::GetSingleton();
-			if (const auto activate_handler = player_controls->activateHandler) {
-				player->AsActorState()->actorState2.weaponState = RE::WEAPON_STATE::kSheathed;
-				if (const auto button_event = GetOrCreateActivateEvent()) {
-					if (activate_handler->CanProcess(button_event)) {
-						logger::trace("Can process button event");
-						const auto id_code = static_cast<int32_t>(button_event->idCode);
-						const auto device = button_event->device.get();
-						const auto input_event_q = RE::BSInputEventQueue::GetSingleton();
-						input_event_q->PushOntoInputQueue(button_event);
-						input_event_q->AddButtonEvent(
-                            device, id_code, 1.f, 0.005f);
-						input_event_q->AddButtonEvent(
-                            device, id_code, 0.f, 0.01f);
-						logger::trace("Processed activate event");
-					}
-					else {
-						logger::error("Cannot process button event");
-					}
-				}
-				else {
-					logger::error("No button event");
-				}
-			}
-			else {
-				logger::error("No activate handler");
-			}
-			logger::trace("Activated {}", ref->GetName());
-		}
-		else {
-			logger::trace("No target ref");
+			    const auto player_controls = RE::PlayerControls::GetSingleton();
+			    if (const auto activate_handler = player_controls->activateHandler) {
+				    player->AsActorState()->actorState2.weaponState = RE::WEAPON_STATE::kSheathed;
+				    if (const auto button_event = GetOrCreateActivateEvent()) {
+					    if (activate_handler->CanProcess(button_event)) {
+						    logger::trace("Can process button event");
+						    const auto id_code = static_cast<int32_t>(button_event->idCode);
+						    const auto device = button_event->device.get();
+						    const auto input_event_q = RE::BSInputEventQueue::GetSingleton();
+						    input_event_q->PushOntoInputQueue(button_event);
+						    input_event_q->AddButtonEvent(
+                                device, id_code, 1.f, 0.005f);
+						    input_event_q->AddButtonEvent(
+                                device, id_code, 0.f, 0.01f);
+						    logger::trace("Processed activate event");
+					    }
+					    else {
+						    logger::error("Cannot process button event");
+					    }
+				    }
+				    else {
+					    logger::error("No button event");
+				    }
+			    }
+			    else {
+				    logger::error("No activate handler");
+			    }
+			    logger::trace("Activated {}", ref->GetName());
+		    }
+		    else {
+			    logger::trace("No target ref");
+		    }
 		}
     }
 	return RE::BSEventNotifyControl::kContinue;

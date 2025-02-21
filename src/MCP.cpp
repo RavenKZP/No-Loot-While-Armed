@@ -16,6 +16,7 @@ void MCP::Register() {
 void __stdcall MCP::RenderSettings()
 {
 	ImGui::Checkbox("Enabled", &MCP::enabled);
+	ImGui::Checkbox("Auto Activate", &MCP::auto_activate);
 }
 
 void __stdcall MCP::RenderLog()
