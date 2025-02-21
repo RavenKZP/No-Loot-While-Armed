@@ -6,7 +6,7 @@
 RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*)
 {
 	//logger::info("AnimationEventSink::ProcessEvent: {} {}", a_event->tag, a_event->payload);
-	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "tailMTIdle") {
+	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "IdleStop") {
 		CleanupAnimationEvent(this);
 		//SKSE::GetTaskInterface()->AddTask([]() {
 			if (const auto ref = Hooks::crosshair_ref) {
