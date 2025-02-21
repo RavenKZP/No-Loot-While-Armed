@@ -1,7 +1,6 @@
 #include "Animation.h"
-
 #include "Hooks.h"
-#include "Utils.h"
+#include "MCP.h"
 
 RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*)
 {
@@ -9,54 +8,41 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
 	if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "IdleStop") {
 		CleanupAnimationEvent(this);
 	    Hooks::blocked.store(false);
-		//SKSE::GetTaskInterface()->AddTask([]() {
-			if (const auto ref = Hooks::crosshair_ref) {
-				const auto player = RE::PlayerCharacter::GetSingleton();
-				const auto a_obj = ref->GetBaseObject();
-				
-				//if (!a_obj->Activate(ref.get(), player, 0, a_obj, 1)) {
-				//	logger::error("Failed to activate {}", ref->GetName());
-				//}
-				//else {
-					//logger::trace("Activated {}", ref->GetName());
-				auto player_controls = RE::PlayerControls::GetSingleton();
-				if (auto activate_handler = player_controls->activateHandler) {
-					if (auto player_controls_data = &player_controls->data) {
-						player->AsActorState()->actorState2.weaponState = RE::WEAPON_STATE::kSheathed;
-						if (auto button_event = GetOrCreateActivateEvent()) {
-							if (activate_handler->CanProcess(button_event)) {
-								logger::trace("Can process button event");
-							    RE::BSInputEventQueue::GetSingleton()->PushOntoInputQueue(button_event);
-							    RE::BSInputEventQueue::GetSingleton()->AddButtonEvent(button_event->device.get()
-									, button_event->idCode, 1.f, 0.005f);
-							    RE::BSInputEventQueue::GetSingleton()->AddButtonEvent(button_event->device.get()
-									, button_event->idCode, 0.f, 0.01f);
-								//activate_handler->ProcessButton(button_event,player_controls_data);
-						        logger::trace("Processed activate event");
-							}
-							else {
-								logger::error("Cannot process button event");
-							}
-						}
-						else {
-							logger::error("No button event");
-						}
+		if (const auto ref = Hooks::crosshair_ref) {
+			const auto player = RE::PlayerCharacter::GetSingleton();
+
+			const auto player_controls = RE::PlayerControls::GetSingleton();
+			if (const auto activate_handler = player_controls->activateHandler) {
+				player->AsActorState()->actorState2.weaponState = RE::WEAPON_STATE::kSheathed;
+				if (const auto button_event = GetOrCreateActivateEvent()) {
+					if (activate_handler->CanProcess(button_event)) {
+						logger::trace("Can process button event");
+						const auto id_code = static_cast<int32_t>(button_event->idCode);
+						const auto device = button_event->device.get();
+						const auto input_event_q = RE::BSInputEventQueue::GetSingleton();
+						input_event_q->PushOntoInputQueue(button_event);
+						input_event_q->AddButtonEvent(
+                            device, id_code, 1.f, 0.005f);
+						input_event_q->AddButtonEvent(
+                            device, id_code, 0.f, 0.01f);
+						logger::trace("Processed activate event");
 					}
 					else {
-						logger::error("No player controls data");
+						logger::error("Cannot process button event");
 					}
 				}
 				else {
-					logger::error("No activate handler");
+					logger::error("No button event");
 				}
-				//}
-				logger::trace("Activated {}", ref->GetName());
 			}
 			else {
-				logger::trace("No target ref");
+				logger::error("No activate handler");
 			}
-			Utils::listenActionEvent.store(false);
-		//});
+			logger::trace("Activated {}", ref->GetName());
+		}
+		else {
+			logger::trace("No target ref");
+		}
     }
 	return RE::BSEventNotifyControl::kContinue;
 }
@@ -83,7 +69,7 @@ RE::ButtonEvent* GetOrCreateActivateEvent()
 		return activate_event;
 	}
 	const auto controlmap = RE::ControlMap::GetSingleton();
-	const auto device = RE::INPUT_DEVICE::kKeyboard;
+    constexpr auto device = RE::INPUT_DEVICE::kKeyboard;
 	const auto activate_key = controlmap->GetMappedKey(RE::UserEvents::GetSingleton()->activate,device);
 	const auto event = RE::ButtonEvent::Create(device,RE::UserEvents::GetSingleton()->activate,activate_key,1.f,0.f);
 	activate_event = event;

@@ -1,6 +1,7 @@
 #include "Events.h"
 #include "logger.h"
 #include "Hooks.h"
+#include "MCP.h"
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
@@ -19,5 +20,6 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     SKSE::Init(skse);
     logger::info("Game version: {}", skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(OnMessage);
+	MCP::Register();
     return true;
 }
