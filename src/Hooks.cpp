@@ -7,11 +7,6 @@ namespace Hooks {
 
     void Install() {
 
-        // Unused as Can't get animations
-        //PlayerUpdateHook::InstallHook();
-
-        RE::FormType JustForReferenceToAllTypes;
-
         auto& trampoline = SKSE::GetTrampoline();
         constexpr size_t size_per_hook = 14;
 	    trampoline.create(size_per_hook*1);
