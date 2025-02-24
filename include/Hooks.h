@@ -10,6 +10,8 @@ namespace Hooks {
 	};
 
 	inline std::atomic_bool blocked = false;
-	inline RE::TESObjectREFRPtr crosshair_ref = nullptr;
+    inline RE::TESObjectREFRPtr crosshair_ref = nullptr;
+    inline RE::TESObjectREFRPtr saved_ref = nullptr;
+    
     bool OnActivate();
 }

@@ -1,48 +1,69 @@
 #pragma once
 
-namespace Settings {
-    inline const char* setting_path{"Data/SKSE/Plugins/NoLootWhileArmed.ini"};
+#include "ClibUtil/singleton.hpp"
 
+class Settings final : public clib_util::singleton::ISingleton<Settings> {
+public:
     void LoadSettings();
     void SaveSettings();
     void ResetSettings();
 
-    inline bool ModActive = true;
+    // Kill Switch
+    bool ModActive = true;
 
     // Display Message
-    inline bool Message = false;
+    bool Message = false;
+    bool MessageSound = true;
 
-    // Auto Sheatle when out of combat
-    inline bool AutoSheatle = true;
-    
+    // Automated actions
+    bool AutoSheatle = true;
+    bool AutoActivate = true;
+    bool AutoDraw = false;
+
+    // Mout, Horse
+    bool NoMount = true;
+
     // Inventory
-    inline bool NoLootBody = true;
-    inline bool NoLootContainer = true;
-    inline bool NoLootPickpocket = true;
+    bool NoLootBody = true;
+    bool NoLootContainer = true;
+    bool NoLootPickpocket = true;
 
-    // World Objects
-    inline bool NoLootFlora = true;
-    inline bool NoLootBugs = true;
+    // Fauna and Flora
+    bool NoLootFlora = true;
+    bool NoLootCritter = true;
 
     // Items
-    inline bool NoLootWeapon = true;
-    inline bool NoLootArmor = true;
-    inline bool NoLootBook = true;
-    inline bool NoLootPotion = true;
-    inline bool NoLootFood = true;
-    inline bool NoLootScrool = true;
-    inline bool NoLootIngredient = true;
-    inline bool NoLootKey = true;
-    inline bool NoLootSoulGem = true;
-    inline bool NoLootMisc = true;
-    inline bool NoLootLight = true;
-    
-    // Open Dors
-    inline bool NoLootDoor = false;
+    bool NoLootWeapon = true;
+    bool NoLootArmor = true;
+    bool NoLootAmmo = true;
+
+    bool NoLootBook = true;
+    bool NoLootNote = true;
+    bool NoLootSpellBook = true;
+    bool NoLootSkillBook = true;
+    bool NoLootScroll = true;
+
+    bool NoLootPotion = true;
+    bool NoLootPoison = true;
+    bool NoLootFood = true;
+    bool NoLootIngredient = true;
+
+    bool NoLootKey = true;
+    bool NoLootSoulGem = true;
+    bool NoLootMisc = true;
+    bool NoLootGold = true;
+    bool NoLootLockpick = true;
+    bool NoLootLight = true;
+
+    // Open Doors
+    bool NoDoor = true;
 
     // Use Furniture (Sit)
-    inline bool NoLootFurniture = true;
+    bool NoFurniture = true;
 
     // Leavers, Buttons
-    inline bool NoLootActivators = true;
-}
+    bool NoActivators = true;
+
+private:
+    const char* setting_path{"Data/SKSE/Plugins/NoLootWhileArmed.ini"};
+};

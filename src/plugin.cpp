@@ -1,6 +1,7 @@
 #include "Events.h"
 #include "logger.h"
 #include "Hooks.h"
+#include "Settings.h"
 #include "MCP.h"
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
@@ -20,6 +21,7 @@ SKSEPluginLoad(const SKSE::LoadInterface *skse) {
     SKSE::Init(skse);
     logger::info("Game version: {}", skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(OnMessage);
+    Settings::GetSingleton()->LoadSettings();
 	MCP::Register();
     return true;
 }
