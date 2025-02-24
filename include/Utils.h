@@ -1,39 +1,13 @@
 #pragma once
 
-namespace Utils {
+const auto mod_name = static_cast<std::string>(SKSE::PluginDeclaration::GetSingleton()->GetName());
 
-	struct ActivationEvent {
-        RE::TESBoundObject* self_this = nullptr;
-        RE::TESObjectREFR* targetRef = nullptr;
-        RE::TESObjectREFR* activatorRef = nullptr;
-        std::uint8_t arg3 = 0;
-        RE::TESBoundObject* object = nullptr;
-        std::int32_t targetCount = 0;
-    };
+std::filesystem::path GetLogPath();
+std::vector<std::string> ReadLogFile();
 
-    inline ActivationEvent SavedActivationEvent;
-
-    void SetActivationEvent(RE::TESBoundObject* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef,
-                          std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount) {
-        SavedActivationEvent.self_this = a_this;
-        SavedActivationEvent.targetRef = a_targetRef;
-        SavedActivationEvent.activatorRef = a_activatorRef;
-        SavedActivationEvent.arg3 = a_arg3;
-        SavedActivationEvent.object = a_object;
-        SavedActivationEvent.targetCount = a_targetCount;
-    }
-
-    ActivationEvent GetActivationEvent() { 
-        return SavedActivationEvent;
-    }
-
-    void ResetActivationEvent() {
-        SavedActivationEvent.self_this = nullptr;
-        SavedActivationEvent.targetRef = nullptr;
-        SavedActivationEvent.activatorRef = nullptr;
-        SavedActivationEvent.arg3 = 0;
-        SavedActivationEvent.object = nullptr;
-        SavedActivationEvent.targetCount = 0;
-    }
-
-}
+namespace LogSettings {
+	inline bool log_trace = true;
+	inline bool log_info = true;
+	inline bool log_warning = true;
+	inline bool log_error = true;
+};

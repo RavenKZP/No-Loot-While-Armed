@@ -3,17 +3,15 @@
 namespace Hooks {
     void Install();
 
-    template <class T>
-    struct ActivateHook {
-        static void InstallHook();
-        static bool thunk(RE::TESBoundObject* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef,
-                          std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount);
-        static inline REL::Relocation<decltype(thunk)> func;
-    };
+    struct InputHook {
+		static void thunk(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_event);
+		static inline REL::Relocation<decltype(thunk)> func;
+		static bool ProcessInput(RE::InputEvent* event);
+	};
 
-    struct PlayerUpdateHook {
-        static void InstallHook();
-        static void thunk(RE::PlayerCharacter* a_player, float a_delta);
-        static inline REL::Relocation<decltype(thunk)> func;
-    };
+	inline std::atomic_bool blocked = false;
+    inline RE::TESObjectREFRPtr crosshair_ref = nullptr;
+    inline RE::TESObjectREFRPtr saved_ref = nullptr;
+    
+    bool OnActivate();
 }
