@@ -44,6 +44,7 @@ void __stdcall MCP::RenderSettings()
 
     ImGui::Text("");
     ImGui::Text("Automated actions");
+    ImGui::Checkbox("No Auto Actions In Combat", &set->NoAutoActionsInCombat);
     ImGui::Checkbox("Sheatle", &set->AutoSheatle);
     ImGui::SameLine();
     ImGui::SetCursorPosX(200);

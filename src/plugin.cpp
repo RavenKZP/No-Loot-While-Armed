@@ -9,9 +9,6 @@ void OnMessage(SKSE::MessagingInterface::Message* message) {
         Hooks::Install();
 		SKSE::GetCrosshairRefEventSource()->AddEventSink(EventSink::GetSingleton());
     }
-    if (message->type == SKSE::MessagingInterface::kNewGame || message->type == SKSE::MessagingInterface::kPostLoadGame) {
-        // Post-load
-    }
 }
 
 SKSEPluginLoad(const SKSE::LoadInterface *skse) {

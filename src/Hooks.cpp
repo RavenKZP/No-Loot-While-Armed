@@ -21,16 +21,17 @@ namespace Hooks {
         const auto set = Settings::GetSingleton();
         const auto player = RE::PlayerCharacter::GetSingleton();
 
-        if (!player->IsInCombat()) {
-            if (set->AutoSheatle) {
-                player->DrawWeaponMagicHands(false);
-                blocked.store(true);
-            }
-            if (set->AutoActivate) {
-                AnimationEventSink* eventSink = GetOrCreateEventSink();
-                player->AddAnimationGraphEventSink(eventSink);
-                saved_ref = crosshair_ref;
-            }
+        if (player->IsInCombat() && set->NoAutoActionsInCombat) {
+            return;
+        }
+        if (set->AutoSheatle) {
+            player->DrawWeaponMagicHands(false);
+            blocked.store(true);
+        }
+        if (set->AutoActivate) {
+            AnimationEventSink* eventSink = GetOrCreateEventSink();
+            player->AddAnimationGraphEventSink(eventSink);
+            saved_ref = crosshair_ref;
         }
     }
 
@@ -115,10 +116,12 @@ namespace Hooks {
                             }
                             break;
                         case RE::FormType::Flora: {
-                            // Nothing seems to work, always getting empty EditorID
-                            auto editorID = crosshair_ref->GetBaseObject()->GetFormEditorID();
-                            if (editorID && strstr(editorID, "Coin")) {
+                            if (a_targetRef->HasKeywordByEditorID("NLWA_Gold")) {
                                 if (set->NoLootGold) {
+                                    noLoot = true;
+                                }
+                            } else if (a_targetRef->HasKeywordByEditorID("NLWA_Critter")) {
+                                if (set->NoLootCritter) {
                                     noLoot = true;
                                 }
                             } else {
@@ -181,9 +184,11 @@ namespace Hooks {
                             }
                             break;
                         case RE::FormType::Activator: {
-                            //Nothing seems to work, always getting empty EditorID
-                            const char* editorID = crosshair_ref->GetBaseObject()->GetFormEditorID();
-                            if (editorID && strstr(editorID, "Critter")) {
+                            if (a_targetRef->HasKeywordByEditorID("NLWA_Gold")) {
+                                if (set->NoLootGold) {
+                                    noLoot = true;
+                                }
+                            } else if (a_targetRef->HasKeywordByEditorID("NLWA_Critter")) {
                                 if (set->NoLootCritter) {
                                     noLoot = true;
                                 }
