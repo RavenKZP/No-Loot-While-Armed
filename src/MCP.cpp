@@ -44,7 +44,10 @@ void __stdcall MCP::RenderSettings()
 
     ImGui::Text("");
     ImGui::Text("Automated actions");
-    ImGui::Checkbox("No Auto Actions In Combat", &set->NoAutoActionsInCombat);
+    ImGui::Checkbox("Allow Actions In Combat", &set->AllowActionsInCombat);
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(400);
+    ImGui::Checkbox("Auto Actions In Combat", &set->AutoActionsInCombat);
     ImGui::Checkbox("Sheatle", &set->AutoSheatle);
     ImGui::SameLine();
     ImGui::SetCursorPosX(200);
@@ -55,8 +58,8 @@ void __stdcall MCP::RenderSettings()
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.1f);
     }
     ImGui::Checkbox("Activate", &set->AutoActivate);
-    //ImGui::SameLine();
-    //ImGui::SetCursorPosX(400);
+    ImGui::SameLine();
+    ImGui::SetCursorPosX(400);
     //ImGui::Checkbox("Draw", &set->AutoDraw);
     if (set->AutoSheatle == false) {
         ImGui::PopItemFlag();

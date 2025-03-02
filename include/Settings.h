@@ -16,7 +16,9 @@ public:
     bool MessageSound = true;
 
     // Automated actions
-    bool NoAutoActionsInCombat = true;
+    bool AllowActionsInCombat = true;
+    bool AutoActionsInCombat = true;
+
     bool AutoSheatle = true;
     bool AutoActivate = true;
     bool AutoDraw = false;

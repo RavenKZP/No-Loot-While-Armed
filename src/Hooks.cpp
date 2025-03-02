@@ -17,12 +17,17 @@ namespace Hooks {
         logger::info("Hooks Installed");
     }
 
-    static void AutoActions() {
+    static bool AutoActions() {
         const auto set = Settings::GetSingleton();
         const auto player = RE::PlayerCharacter::GetSingleton();
 
-        if (player->IsInCombat() && set->NoAutoActionsInCombat) {
-            return;
+        if (player->IsInCombat()) {
+            if (!set->AllowActionsInCombat) {
+                return false;
+            }
+            if (!set->AutoActionsInCombat) {
+                return true;
+            }
         }
         if (set->AutoSheatle) {
             player->DrawWeaponMagicHands(false);
@@ -33,6 +38,7 @@ namespace Hooks {
             player->AddAnimationGraphEventSink(eventSink);
             saved_ref = crosshair_ref;
         }
+        return false;
     }
 
     bool OnActivate() {
@@ -202,8 +208,7 @@ namespace Hooks {
                     }
 
                     if (noLoot) {
-                        AutoActions();
-                        return false;
+                        return AutoActions();
                     }
                 }
             }

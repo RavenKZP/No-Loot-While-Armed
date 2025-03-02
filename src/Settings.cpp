@@ -16,7 +16,8 @@ void Settings::LoadSettings() {
         Message = ini.GetBoolValue(L"Settings", L"Message");
         MessageSound = ini.GetBoolValue(L"Settings", L"MessageSound");
 
-        NoAutoActionsInCombat = ini.GetBoolValue(L"Settings", L"NoAutoActionsInCombat");
+        AllowActionsInCombat = ini.GetBoolValue(L"Settings", L"AllowActionsInCombat");
+        AutoActionsInCombat = ini.GetBoolValue(L"Settings", L"AutoActionsInCombat");
         AutoSheatle = ini.GetBoolValue(L"Settings", L"AutoSheatle");
         AutoActivate = ini.GetBoolValue(L"Settings", L"AutoActivate");
         //AutoDraw = ini.GetBoolValue(L"Settings", L"AutoDraw");
@@ -69,8 +70,10 @@ void Settings::SaveSettings() {
 
     ini.SetBoolValue(L"Settings", L"Message", Message);
     ini.SetBoolValue(L"Settings", L"MessageSound", MessageSound);
-    
-    ini.SetBoolValue(L"Settings", L"NoAutoActionsInCombat", NoAutoActionsInCombat);
+
+    ini.SetBoolValue(L"Settings", L"AllowActionsInCombat", AllowActionsInCombat);
+    ini.SetBoolValue(L"Settings", L"AutoActionsInCombat", AutoActionsInCombat);
+
     ini.SetBoolValue(L"Settings", L"AutoSheatle", AutoSheatle);
     ini.SetBoolValue(L"Settings", L"AutoActivate", AutoActivate);
     //ini.SetBoolValue(L"Settings", L"AutoDraw", AutoDraw);
@@ -121,7 +124,9 @@ void Settings::ResetSettings() {
     Message = false;
     MessageSound = true;
 
-    NoAutoActionsInCombat = true;
+    AllowActionsInCombat = true;
+    AutoActionsInCombat = true;
+
     AutoSheatle = true;
     AutoActivate = true;
     AutoDraw = false;
