@@ -34,9 +34,7 @@ std::vector<std::string> ReadLogFile()
 }
 
 void ModCompatibility::QuickLootMod::OnOpeningLootMenu(QuickLoot::Events::OpeningLootMenuEvent* event) {
-    logger::info("Loot menu is opening...");
 	if (!GetSingleton()->IsAllowed()) {
-		logger::info("Loot menu is blocked");
         event->result = QuickLoot::Events::HandleResult::kStop;
 	}
     Hooks::saved_ref.reset();

@@ -10,7 +10,6 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(const SKSE::CrosshairRefEvent* 
 		ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(true);
 	}
 	else if (Hooks::saved_ref != a_event->crosshairRef) {
-		logger::info("CrosshairRef is a container");
 	    ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
 	}
 
