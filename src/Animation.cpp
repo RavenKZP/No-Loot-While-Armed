@@ -1,16 +1,14 @@
 #include "Animation.h"
 #include "Hooks.h"
 
-RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*)
-{
-	//logger::info("AnimationEventSink::ProcessEvent: {} {}", a_event->tag, a_event->payload);
+RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationGraphEvent* a_event,
+                                                          RE::BSTEventSource<RE::BSAnimationGraphEvent>*) {
     if (const RE::BSFixedString& eventTag = a_event->tag; eventTag == "IdleStop") {
         CleanupAnimationEvent(this);
         Hooks::blocked.store(false);
         if (const auto ref = Hooks::crosshair_ref) {
             if (ref == Hooks::saved_ref) {
                 const auto player = RE::PlayerCharacter::GetSingleton();
-
                 const auto player_controls = RE::PlayerControls::GetSingleton();
                 if (const auto activate_handler = player_controls->activateHandler) {
                     player->AsActorState()->actorState2.weaponState = RE::WEAPON_STATE::kSheathed;
@@ -28,11 +26,10 @@ RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationG
             }
         }
     }
-	return RE::BSEventNotifyControl::kContinue;
+    return RE::BSEventNotifyControl::kContinue;
 }
 
-void CleanupAnimationEvent(AnimationEventSink* eventSink)
-{
+void CleanupAnimationEvent(AnimationEventSink* eventSink) {
     RE::PlayerCharacter::GetSingleton()->RemoveAnimationGraphEventSink(eventSink);
 }
 
@@ -46,15 +43,15 @@ AnimationEventSink* GetOrCreateEventSink()
 	return eventSink;
 }
 
-RE::ButtonEvent* GetOrCreateActivateEvent()
-{
-	if (activate_event) {
-		return activate_event;
-	}
-	const auto controlmap = RE::ControlMap::GetSingleton();
+RE::ButtonEvent* GetOrCreateActivateEvent() {
+    if (activate_event) {
+        return activate_event;
+    }
+    const auto controlmap = RE::ControlMap::GetSingleton();
     constexpr auto device = RE::INPUT_DEVICE::kKeyboard;
-	const auto activate_key = controlmap->GetMappedKey(RE::UserEvents::GetSingleton()->activate,device);
-	const auto event = RE::ButtonEvent::Create(device,RE::UserEvents::GetSingleton()->activate,activate_key,1.f,0.f);
-	activate_event = event;
-	return event;
+    const auto activate_key = controlmap->GetMappedKey(RE::UserEvents::GetSingleton()->activate, device);
+    const auto event =
+        RE::ButtonEvent::Create(device, RE::UserEvents::GetSingleton()->activate, activate_key, 1.f, 0.f);
+    activate_event = event;
+    return event;
 }

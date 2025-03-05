@@ -31,6 +31,9 @@ public:
     bool NoLootContainer = true;
     bool NoLootPickpocket = true;
 
+    //QuickLoot
+    bool QuickLootSupport = true;
+
     // Fauna and Flora
     bool NoLootFlora = true;
     bool NoLootCritter = true;

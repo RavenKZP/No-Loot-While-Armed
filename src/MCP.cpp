@@ -16,8 +16,7 @@ void MCP::Register() {
 
 }
 
-void __stdcall MCP::RenderSettings()
-{
+void __stdcall MCP::RenderSettings() {
     Settings* set = Settings::GetSingleton();
     if (ImGui::Button("Save Settings")) {
         set->SaveSettings();
@@ -60,7 +59,7 @@ void __stdcall MCP::RenderSettings()
     ImGui::Checkbox("Activate", &set->AutoActivate);
     ImGui::SameLine();
     ImGui::SetCursorPosX(400);
-    //ImGui::Checkbox("Draw", &set->AutoDraw);
+    // ImGui::Checkbox("Draw", &set->AutoDraw);
     if (set->AutoSheatle == false) {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();
@@ -79,6 +78,18 @@ void __stdcall MCP::RenderSettings()
     ImGui::SameLine();
     ImGui::SetCursorPosX(400);
     ImGui::Checkbox("Pickopcket", &set->NoLootPickpocket);
+
+    if (!ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, 0.1f);
+    }
+    ImGui::Text("");
+    ImGui::Text("Quick loot Integration");
+    ImGui::Checkbox("Quick Loot Support", &set->QuickLootSupport);
+    if (!ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
+        ImGui::PopItemFlag();
+        ImGui::PopStyleVar();
+    }
 
     ImGui::Text("");
     ImGui::Text("Fauna and Flora");
@@ -121,8 +132,8 @@ void __stdcall MCP::RenderSettings()
     ImGui::SetCursorPosX(200);
     ImGui::Checkbox("Soul Gem", &set->NoLootSoulGem);
 
-    //ImGui::SameLine();
-    //ImGui::Checkbox("Note", &set->NoLootNote);
+    // ImGui::SameLine();
+    // ImGui::Checkbox("Note", &set->NoLootNote);
 
     ImGui::Checkbox("Key", &set->NoLootKey);
     ImGui::SameLine();
@@ -146,9 +157,8 @@ void __stdcall MCP::RenderSettings()
 
     ImGui::Text("");
     ImGui::Text("Activators, Buttons, Leavers");
-    ImGui::Checkbox("Activators", &set->NoActivators);    
+    ImGui::Checkbox("Activators", &set->NoActivators);
 
-    
     if (set->ModActive == false) {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();
@@ -156,8 +166,7 @@ void __stdcall MCP::RenderSettings()
 }
 
 
-void __stdcall MCP::RenderLog()
-{
+void __stdcall MCP::RenderLog() {
     ImGui::Checkbox("Trace", &LogSettings::log_trace);
     ImGui::SameLine();
     ImGui::Checkbox("Info", &LogSettings::log_info);
@@ -166,11 +175,10 @@ void __stdcall MCP::RenderLog()
     ImGui::SameLine();
     ImGui::Checkbox("Error", &LogSettings::log_error);
 
-
     // if"Generate Log" button is pressed, read the log file
     if (ImGui::Button("Generate Log")) {
-		logLines = ReadLogFile();
-	}
+        logLines = ReadLogFile();
+    }
 
     // Display each line in a new ImGui::Text() element
     for (const auto& line : logLines) {
@@ -178,6 +186,6 @@ void __stdcall MCP::RenderLog()
         if (line.find("info") != std::string::npos && !LogSettings::log_info) continue;
         if (line.find("warning") != std::string::npos && !LogSettings::log_warning) continue;
         if (line.find("error") != std::string::npos && !LogSettings::log_error) continue;
-		ImGui::Text(line.c_str());
-	}
+        ImGui::Text(line.c_str());
+    }
 }

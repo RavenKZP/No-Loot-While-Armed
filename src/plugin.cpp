@@ -7,20 +7,19 @@
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
-		ModCompatibility::Install();
+        ModCompatibility::Install();
         Hooks::Install();
-		EventSinks::Install();
+        EventSinks::Install();
     }
 }
 
-SKSEPluginLoad(const SKSE::LoadInterface *skse) {
-
+SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SetupLog();
     logger::info("Plugin loaded");
     SKSE::Init(skse);
     logger::info("Game version: {}", skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(OnMessage);
     Settings::GetSingleton()->LoadSettings();
-	MCP::Register();
+    MCP::Register();
     return true;
 }
