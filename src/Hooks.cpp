@@ -36,7 +36,6 @@ namespace Hooks {
         if (set->AutoActivate) {
             AnimationEventSink* eventSink = GetOrCreateEventSink();
             player->AddAnimationGraphEventSink(eventSink);
-            saved_ref = crosshair_ref;
         }
         return false;
     }
@@ -44,6 +43,8 @@ namespace Hooks {
     bool OnActivate() {
         const auto set = Settings::GetSingleton();
 		const auto player = RE::PlayerCharacter::GetSingleton();
+
+		saved_ref = crosshair_ref;
 
         if (const auto actorState = player->AsActorState()) {
             if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
@@ -282,11 +283,11 @@ namespace Hooks {
     template<typename ContainerType>
     bool ActivateHook<ContainerType>::thunk(ContainerType* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount)
     {
-        static SKSE::CrosshairRefEvent my_event;
 		if (const auto ql = ModCompatibility::QuickLootMod::GetSingleton(); !ql->IsAllowed()) {
             ql->SetAllowed(true);
-		    my_event.crosshairRef.reset();
+			my_event2.crosshairRef = Hooks::saved_ref;
 		    SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
+		    SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
 			return false;
 		}
 		return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);

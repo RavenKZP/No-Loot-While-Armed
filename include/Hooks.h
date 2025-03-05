@@ -26,6 +26,8 @@ namespace Hooks {
 	inline std::atomic_bool blocked = false;
     inline RE::TESObjectREFRPtr crosshair_ref = nullptr;
     inline RE::TESObjectREFRPtr saved_ref = nullptr;
+    inline const SKSE::CrosshairRefEvent my_event{nullptr};
+    inline SKSE::CrosshairRefEvent my_event2{nullptr};
     
     bool OnActivate();
 }

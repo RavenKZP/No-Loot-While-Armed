@@ -34,10 +34,8 @@ std::vector<std::string> ReadLogFile()
 }
 
 void ModCompatibility::QuickLootMod::OnOpeningLootMenu(QuickLoot::Events::OpeningLootMenuEvent* event) {
-	if (!GetSingleton()->IsAllowed()) {
-        event->result = QuickLoot::Events::HandleResult::kStop;
-	}
-    Hooks::saved_ref.reset();
+	if (!GetSingleton()->IsAllowed()) event->result = QuickLoot::Events::HandleResult::kStop;
+    else Hooks::saved_ref.reset();
 }
 
 void ModCompatibility::Install()
