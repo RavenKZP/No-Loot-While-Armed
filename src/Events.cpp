@@ -6,11 +6,13 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(const SKSE::CrosshairRefEvent* 
 {
     Hooks::crosshair_ref = a_event->crosshairRef;
 
-	if (!Hooks::saved_ref) {
-	    ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
-	}
-	else if (a_event->crosshairRef && Hooks::saved_ref->GetFormID() != a_event->crosshairRef->GetFormID()) {
-	    ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+	if (ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
+	    if (!Hooks::saved_ref) {
+	        ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+	    }
+	    else if (a_event->crosshairRef && Hooks::saved_ref->GetFormID() != a_event->crosshairRef->GetFormID()) {
+	        ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+	    }
 	}
 
 	return RE::BSEventNotifyControl::kContinue;

@@ -12,9 +12,10 @@ namespace Hooks {
 	    trampoline.create(size_per_hook*1);
         const REL::Relocation<std::uintptr_t> target3{REL::RelocationID(67315, 68617)};
         InputHook::func = trampoline.write_call<5>(target3.address() + 0x7B, InputHook::thunk);
-		ActivateHook<RE::TESObjectCONT>::Install();
-		ActivateHook<RE::TESNPC>::Install();
-
+        if (ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
+		    ActivateHook<RE::TESObjectCONT>::Install();
+		    ActivateHook<RE::TESNPC>::Install();
+        }
         logger::info("Hooks Installed");
     }
 
