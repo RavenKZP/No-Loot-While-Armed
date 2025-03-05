@@ -49,7 +49,8 @@ bool Game::HasItem(RE::TESObjectREFR* ref, const RE::TESForm* item)
         for (const auto inv = ref->GetInventory(); 
             const auto& [fst, snd] : inv) {
             if (snd.first > 0) {
-				const auto res = item ? fst->GetFormID() == item->GetFormID() : !fst->Is(RE::TESLevItem::FORMTYPE);
+				const auto a_name = fst->GetName();
+				const auto res = item ? fst->GetFormID() == item->GetFormID() : a_name && (*a_name != '\0');
 				if (res) return true;
             }
         }

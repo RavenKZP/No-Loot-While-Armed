@@ -52,7 +52,7 @@ namespace Hooks {
             if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
                 if (const auto a_targetRef = crosshair_ref->GetBaseObject()) {
                     bool noLoot = false;
-                    auto FormType = a_targetRef->GetFormType();
+                    const auto FormType = a_targetRef->GetFormType();
 
                     // Iteraction with other Actor
                     switch (FormType) {
@@ -285,17 +285,28 @@ namespace Hooks {
     template<typename ContainerType>
     bool ActivateHook<ContainerType>::thunk(ContainerType* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount)
     {
+		if (!a_targetRef || !a_activatorRef || !a_activatorRef->IsPlayerRef()) {
+			return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+		}
+
+        if (const auto a_actor = a_targetRef->As<RE::Actor>(); a_actor && !a_actor->IsDead()) {
+			return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
 		if (const auto ql = ModCompatibility::QuickLootMod::GetSingleton(); !ql->IsAllowed()) {
-            if (a_activatorRef->IsPlayerRef() && 
-                a_targetRef && Hooks::saved_ref && 
-                a_targetRef->GetFormID() == Hooks::saved_ref->GetFormID()) {
-                if (Game::HasItem(a_targetRef)) {
-                    ql->SetAllowed(true);
-			        my_event2.crosshairRef = Hooks::saved_ref;
-		            SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
-		            SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
-			        return false;
-		        }
+            if (Hooks::saved_ref && a_targetRef->GetFormID() == Hooks::saved_ref->GetFormID() && Game::HasItem(a_targetRef)) {
+#ifndef NDEBUG
+				logger::info("Inventory owner: {}, formtype {}", a_targetRef->GetName(), RE::FormTypeToString(a_targetRef->GetFormType()));
+				const auto inv = a_targetRef->GetInventory();
+                for (auto& [a,b] : inv) {
+					logger::trace("Item {} ({}) formtype {}, count {}", a->GetName(), a->GetFormID(), RE::FormTypeToString(a->GetFormType()), b.first);
+                }
+#endif
+                ql->SetAllowed(true);
+			    my_event2.crosshairRef = Hooks::saved_ref;
+		        SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
+		        SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
+			    return false;
             }
         }
 
