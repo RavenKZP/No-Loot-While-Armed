@@ -3,11 +3,13 @@
 #include "Hooks.h"
 #include "Settings.h"
 #include "MCP.h"
+#include "Utils.h"
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
+		ModCompatibility::Install();
         Hooks::Install();
-		SKSE::GetCrosshairRefEventSource()->AddEventSink(EventSink::GetSingleton());
+		EventSinks::Install();
     }
 }
 

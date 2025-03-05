@@ -1,6 +1,5 @@
 #include "Animation.h"
 #include "Hooks.h"
-#include "MCP.h"
 
 RE::BSEventNotifyControl AnimationEventSink::ProcessEvent(const RE::BSAnimationGraphEvent* a_event, RE::BSTEventSource<RE::BSAnimationGraphEvent>*)
 {

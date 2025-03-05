@@ -1,8 +1,7 @@
 #include "Hooks.h"
-#include "Utils.h"
 #include "Animation.h"
-#include "MCP.h"
 #include "Settings.h"
+#include "Utils.h"
 
 namespace Hooks {
 
@@ -13,6 +12,7 @@ namespace Hooks {
 	    trampoline.create(size_per_hook*1);
         const REL::Relocation<std::uintptr_t> target3{REL::RelocationID(67315, 68617)};
         InputHook::func = trampoline.write_call<5>(target3.address() + 0x7B, InputHook::thunk);
+		ActivateHook<RE::TESObjectCONT>::Install();
 
         logger::info("Hooks Installed");
     }
@@ -47,8 +47,8 @@ namespace Hooks {
 
         if (const auto actorState = player->AsActorState()) {
             if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
-                bool noLoot = false;
                 if (const auto a_targetRef = crosshair_ref->GetBaseObject()) {
+                    bool noLoot = false;
                     auto FormType = a_targetRef->GetFormType();
 
                     // Iteraction with other Actor
@@ -272,5 +272,25 @@ namespace Hooks {
         }
         return block;
     }
+
+    template <typename ContainerType>
+    void ActivateHook<ContainerType>::Install() {
+        REL::Relocation<std::uintptr_t> vTable(ContainerType::VTABLE[0]);
+        func = vTable.write_vfunc(0x37, &ActivateHook::thunk);
+    }
+
+    template<typename ContainerType>
+    bool ActivateHook<ContainerType>::thunk(ContainerType* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount)
+    {
+        static SKSE::CrosshairRefEvent my_event;
+		if (const auto ql = ModCompatibility::QuickLootMod::GetSingleton(); !ql->IsAllowed()) {
+            ql->SetAllowed(true);
+		    my_event.crosshairRef.reset();
+		    SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
+			return false;
+		}
+		return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+    }
+
 
 }

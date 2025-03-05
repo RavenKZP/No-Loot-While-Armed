@@ -1,5 +1,7 @@
 #include "Utils.h"
 
+#include "Hooks.h"
+
 std::filesystem::path GetLogPath()
 {
     const auto logsFolder = SKSE::log::log_directory();
@@ -31,3 +33,16 @@ std::vector<std::string> ReadLogFile()
     return logLines;
 }
 
+void ModCompatibility::QuickLootMod::OnOpeningLootMenu(QuickLoot::Events::OpeningLootMenuEvent* event) {
+    logger::info("Loot menu is opening...");
+	if (!GetSingleton()->IsAllowed()) {
+		logger::info("Loot menu is blocked");
+        event->result = QuickLoot::Events::HandleResult::kStop;
+	}
+    Hooks::saved_ref.reset();
+}
+
+void ModCompatibility::Install()
+{
+	QuickLootMod::GetSingleton()->Init();
+}

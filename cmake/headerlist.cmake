@@ -9,4 +9,8 @@ set(headers ${headers}
 	include/MCP.h
 	include/Serialization.h
 	include/Animation.h
+	include/QuickLootAPI.h
+	include/PluginRequests/PluginRequests.h
+	include/PluginRequests/RequestClient.h
+	include/PluginRequests/RequestServer.h
 )
