@@ -42,3 +42,17 @@ void ModCompatibility::Install()
 {
 	QuickLootMod::GetSingleton()->Init();
 }
+
+bool Game::HasItem(RE::TESObjectREFR* ref, const RE::TESForm* item)
+{
+    if (ref->HasContainer()) {
+        for (const auto inv = ref->GetInventory(); 
+            const auto& [fst, snd] : inv) {
+            if (snd.first > 0) {
+				const auto res = item ? fst->GetFormID() == item->GetFormID() : !fst->Is(RE::TESLevItem::FORMTYPE);
+				if (res) return true;
+            }
+        }
+    }
+    return false;
+}

@@ -7,6 +7,10 @@ const auto mod_name = static_cast<std::string>(SKSE::PluginDeclaration::GetSingl
 std::filesystem::path GetLogPath();
 std::vector<std::string> ReadLogFile();
 
+namespace Game {
+	bool HasItem(RE::TESObjectREFR* ref, const RE::TESForm* item=nullptr);
+};
+
 
 namespace ModCompatibility {
 

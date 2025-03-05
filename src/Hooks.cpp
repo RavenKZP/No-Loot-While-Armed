@@ -13,6 +13,7 @@ namespace Hooks {
         const REL::Relocation<std::uintptr_t> target3{REL::RelocationID(67315, 68617)};
         InputHook::func = trampoline.write_call<5>(target3.address() + 0x7B, InputHook::thunk);
 		ActivateHook<RE::TESObjectCONT>::Install();
+		ActivateHook<RE::TESNPC>::Install();
 
         logger::info("Hooks Installed");
     }
@@ -284,12 +285,19 @@ namespace Hooks {
     bool ActivateHook<ContainerType>::thunk(ContainerType* a_this, RE::TESObjectREFR* a_targetRef, RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3, RE::TESBoundObject* a_object, std::int32_t a_targetCount)
     {
 		if (const auto ql = ModCompatibility::QuickLootMod::GetSingleton(); !ql->IsAllowed()) {
-            ql->SetAllowed(true);
-			my_event2.crosshairRef = Hooks::saved_ref;
-		    SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
-		    SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
-			return false;
-		}
+            if (a_activatorRef->IsPlayerRef() && 
+                a_targetRef && Hooks::saved_ref && 
+                a_targetRef->GetFormID() == Hooks::saved_ref->GetFormID()) {
+                if (Game::HasItem(a_targetRef)) {
+                    ql->SetAllowed(true);
+			        my_event2.crosshairRef = Hooks::saved_ref;
+		            SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
+		            SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
+			        return false;
+		        }
+            }
+        }
+
 		return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
     }
 
