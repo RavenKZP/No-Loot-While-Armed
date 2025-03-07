@@ -20,13 +20,15 @@ void Settings::LoadSettings() {
         AutoActionsInCombat = ini.GetBoolValue(L"Settings", L"AutoActionsInCombat");
         AutoSheatle = ini.GetBoolValue(L"Settings", L"AutoSheatle");
         AutoActivate = ini.GetBoolValue(L"Settings", L"AutoActivate");
-        //AutoDraw = ini.GetBoolValue(L"Settings", L"AutoDraw");
+        // AutoDraw = ini.GetBoolValue(L"Settings", L"AutoDraw");
 
         NoMount = ini.GetBoolValue(L"Settings", L"NoMount");
 
         NoLootBody = ini.GetBoolValue(L"Settings", L"NoLootBody");
         NoLootContainer = ini.GetBoolValue(L"Settings", L"NoLootContainer");
         NoLootPickpocket = ini.GetBoolValue(L"Settings", L"NoLootPickpocket");
+
+        QuickLootSupport = ini.GetBoolValue(L"Settings", L"QuickLootSupport");
 
         NoLootFlora = ini.GetBoolValue(L"Settings", L"NoLootFlora");
         NoLootCritter = ini.GetBoolValue(L"Settings", L"NoLootCritter");
@@ -76,13 +78,15 @@ void Settings::SaveSettings() {
 
     ini.SetBoolValue(L"Settings", L"AutoSheatle", AutoSheatle);
     ini.SetBoolValue(L"Settings", L"AutoActivate", AutoActivate);
-    //ini.SetBoolValue(L"Settings", L"AutoDraw", AutoDraw);
+    // ini.SetBoolValue(L"Settings", L"AutoDraw", AutoDraw);
 
     ini.SetBoolValue(L"Settings", L"NoMount", NoMount);
 
     ini.SetBoolValue(L"Settings", L"NoLootBody", NoLootBody);
     ini.SetBoolValue(L"Settings", L"NoLootContainer", NoLootContainer);
     ini.SetBoolValue(L"Settings", L"NoLootPickpocket", NoLootPickpocket);
+
+    ini.SetBoolValue(L"Settings", L"QuickLootSupport", QuickLootSupport);
 
     ini.SetBoolValue(L"Settings", L"NoLootFlora", NoLootFlora);
     ini.SetBoolValue(L"Settings", L"NoLootCritter", NoLootCritter);
@@ -136,6 +140,8 @@ void Settings::ResetSettings() {
     NoLootBody = true;
     NoLootContainer = true;
     NoLootPickpocket = true;
+
+    QuickLootSupport = true;
 
     NoLootFlora = true;
     NoLootCritter = true;

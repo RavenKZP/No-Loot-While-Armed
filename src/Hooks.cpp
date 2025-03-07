@@ -1,19 +1,20 @@
 #include "Hooks.h"
-#include "Utils.h"
 #include "Animation.h"
-#include "MCP.h"
 #include "Settings.h"
+#include "Utils.h"
 
 namespace Hooks {
 
     void Install() {
-
         auto& trampoline = SKSE::GetTrampoline();
         constexpr size_t size_per_hook = 14;
-	    trampoline.create(size_per_hook*1);
+        trampoline.create(size_per_hook * 1);
         const REL::Relocation<std::uintptr_t> target3{REL::RelocationID(67315, 68617)};
         InputHook::func = trampoline.write_call<5>(target3.address() + 0x7B, InputHook::thunk);
-
+        if (ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
+            ActivateHook<RE::TESObjectCONT>::Install();
+            ActivateHook<RE::TESNPC>::Install();
+        }
         logger::info("Hooks Installed");
     }
 
@@ -36,20 +37,21 @@ namespace Hooks {
         if (set->AutoActivate) {
             AnimationEventSink* eventSink = GetOrCreateEventSink();
             player->AddAnimationGraphEventSink(eventSink);
-            saved_ref = crosshair_ref;
         }
         return false;
     }
 
     bool OnActivate() {
         const auto set = Settings::GetSingleton();
-		const auto player = RE::PlayerCharacter::GetSingleton();
+        const auto player = RE::PlayerCharacter::GetSingleton();
+
+        saved_ref = crosshair_ref;
 
         if (const auto actorState = player->AsActorState()) {
             if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
-                bool noLoot = false;
                 if (const auto a_targetRef = crosshair_ref->GetBaseObject()) {
-                    auto FormType = a_targetRef->GetFormType();
+                    bool noLoot = false;
+                    const auto FormType = a_targetRef->GetFormType();
 
                     // Iteraction with other Actor
                     switch (FormType) {
@@ -101,7 +103,7 @@ namespace Hooks {
                                 noLoot = true;
                             }
                             break;
-                        case RE::FormType::Note: //Is this even Used?
+                        case RE::FormType::Note:  // Is this even Used?
                             if (set->NoLootNote) {
                                 noLoot = true;
                             }
@@ -218,8 +220,8 @@ namespace Hooks {
 
     void InputHook::thunk(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_event) {
         if (!Settings::GetSingleton()->ModActive || !a_dispatcher || !a_event || !crosshair_ref) {
-		    return func(a_dispatcher, a_event);
-	    }
+            return func(a_dispatcher, a_event);
+        }
         auto first = *a_event;
         auto last = *a_event;
         size_t length = 0;
@@ -249,15 +251,15 @@ namespace Hooks {
 
     bool InputHook::ProcessInput(RE::InputEvent* event) {
         auto set = Settings::GetSingleton();
-		bool block = false;
-		if (const auto button_event = event->AsButtonEvent()) {
+        bool block = false;
+        if (const auto button_event = event->AsButtonEvent()) {
             if (button_event->userEvent == RE::UserEvents::GetSingleton()->activate) {
                 if (button_event->IsDown()) {
-				    if (!OnActivate()) {
-					    block = true;
+                    if (!OnActivate()) {
+                        block = true;
                     }
                 } else if (blocked.load()) {
-					block = true;
+                    block = true;
                 }
             }
         }
@@ -267,10 +269,51 @@ namespace Hooks {
             } else if (set->Message) {
                 RE::DebugNotification("No Loot When Armed");
             } else if (set->MessageSound) {
-                RE::DebugNotification(" ", "UIMenuCancel"); // Not trigger multiple times like PlaySound do
+                RE::DebugNotification(" ", "UIMenuCancel");  // Not trigger multiple times like PlaySound do
             }
         }
         return block;
+    }
+
+    template <typename ContainerType>
+    void ActivateHook<ContainerType>::Install() {
+        REL::Relocation<std::uintptr_t> vTable(ContainerType::VTABLE[0]);
+        func = vTable.write_vfunc(0x37, &ActivateHook::thunk);
+    }
+
+    template <typename ContainerType>
+    bool ActivateHook<ContainerType>::thunk(ContainerType* a_this, RE::TESObjectREFR* a_targetRef,
+                                            RE::TESObjectREFR* a_activatorRef, std::uint8_t a_arg3,
+                                            RE::TESBoundObject* a_object, std::int32_t a_targetCount) {
+        if (!a_targetRef || !a_activatorRef || !a_activatorRef->IsPlayerRef()) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
+        if (const auto a_actor = a_targetRef->As<RE::Actor>(); a_actor && !a_actor->IsDead()) {
+            return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
+        }
+
+        if (const auto ql = ModCompatibility::QuickLootMod::GetSingleton(); !ql->IsAllowed()) {
+            if (Hooks::saved_ref && a_targetRef->GetFormID() == Hooks::saved_ref->GetFormID() &&
+                Game::HasItem(a_targetRef)) {
+#ifndef NDEBUG
+                logger::info("Inventory owner: {}, formtype {}", a_targetRef->GetName(),
+                             RE::FormTypeToString(a_targetRef->GetFormType()));
+                const auto inv = a_targetRef->GetInventory();
+                for (auto& [a, b] : inv) {
+                    logger::trace("Item {} ({}) formtype {}, count {}", a->GetName(), a->GetFormID(),
+                                  RE::FormTypeToString(a->GetFormType()), b.first);
+                }
+#endif
+                ql->SetAllowed(true);
+                my_event2.crosshairRef = Hooks::saved_ref;
+                SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event);
+                SKSE::GetCrosshairRefEventSource()->SendEvent(&my_event2);
+                return false;
+            }
+        }
+
+        return func(a_this, a_targetRef, a_activatorRef, a_arg3, a_object, a_targetCount);
     }
 
 }
