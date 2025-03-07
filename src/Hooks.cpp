@@ -18,28 +18,31 @@ namespace Hooks {
         logger::info("Hooks Installed");
     }
 
-    static bool AutoActions() {
-        const auto set = Settings::GetSingleton();
-        const auto player = RE::PlayerCharacter::GetSingleton();
+    namespace {
+        bool AutoActions() {
+            const auto set = Settings::GetSingleton();
+            const auto player = RE::PlayerCharacter::GetSingleton();
 
-        if (player->IsInCombat()) {
-            if (!set->AllowActionsInCombat) {
-                return false;
+            if (player->IsInCombat()) {
+                if (!set->AllowActionsInCombat) {
+                    return false;
+                }
+                if (!set->AutoActionsInCombat) {
+                    return true;
+                }
             }
-            if (!set->AutoActionsInCombat) {
-                return true;
+            if (set->AutoSheatle) {
+                player->DrawWeaponMagicHands(false);
+                blocked.store(true);
             }
+            if (set->AutoActivate) {
+                AnimationEventSink* eventSink = GetOrCreateEventSink();
+                player->AddAnimationGraphEventSink(eventSink);
+            }
+            return false;
         }
-        if (set->AutoSheatle) {
-            player->DrawWeaponMagicHands(false);
-            blocked.store(true);
-        }
-        if (set->AutoActivate) {
-            AnimationEventSink* eventSink = GetOrCreateEventSink();
-            player->AddAnimationGraphEventSink(eventSink);
-        }
-        return false;
     }
+
 
     bool OnActivate() {
         const auto set = Settings::GetSingleton();
@@ -51,10 +54,9 @@ namespace Hooks {
             if (actorState->GetWeaponState() != RE::WEAPON_STATE::kSheathed) {
                 if (const auto a_targetRef = crosshair_ref->GetBaseObject()) {
                     bool noLoot = false;
-                    const auto FormType = a_targetRef->GetFormType();
 
                     // Iteraction with other Actor
-                    switch (FormType) {
+                    switch (a_targetRef->GetFormType()) {
                         case RE::FormType::NPC: {
                             auto NPC = crosshair_ref->As<RE::Actor>();
                             if (NPC->IsDead()) {  // Dead Actor
