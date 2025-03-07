@@ -185,6 +185,7 @@ void __stdcall MCP::RenderLog() {
 MCP::SettingsMCP::Section::Section(std::string a_label, const std::map<size_t, std::vector<std::string>>& checkboxes) : checkboxes(checkboxes), label(std::move(
     a_label)) {
 	if (label == "Automated Actions") spacing = 400.0f;
+	if (label == "Quick Loot") spacing = 300.0f;
 }
 
 void MCP::SettingsMCP::Section::Render()
