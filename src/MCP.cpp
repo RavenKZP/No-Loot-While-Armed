@@ -19,6 +19,7 @@ namespace {
 		if (checkbox_name == "Containers") return &set->NoLootContainer;
 		if (checkbox_name == "Pickpocket") return &set->NoLootPickpocket;
 		if (checkbox_name == "QuickLoot Support") return &set->QuickLootSupport;
+		if (checkbox_name == "Hide Menu Only When Wielding") return &set->HideQLOnlyWield;
 		if (checkbox_name == "Flora") return &set->NoLootFlora;
 		if (checkbox_name == "Critter") return &set->NoLootCritter;
 		if (checkbox_name == "Weapon") return &set->NoLootWeapon;
@@ -239,7 +240,7 @@ void MCP::SettingsMCP::CreateSettingsSections()
 		CREATE_SECTION("Automated Actions",SVEC("Allow Actions In Combat", "Auto Actions In Combat", "Sheathe", "Activate"), 2, 4);
 		CREATE_SECTION("Mount",SVEC("Mount"),1);
 		CREATE_SECTION("Inventory", SVEC("Dead Body", "Containers", "Pickpocket"), 3);
-		CREATE_SECTION("Quick Loot", SVEC("QuickLoot Support"), 1);
+		CREATE_SECTION("Quick Loot", SVEC("QuickLoot Support","Hide Menu Only When Wielding"), 2);
 		CREATE_SECTION("Fauna and Flora", SVEC("Flora", "Critter"), 2);
 		CREATE_SECTION("Items", 
 			SVEC("Weapon", "Armor", "Ammo", 

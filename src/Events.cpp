@@ -7,11 +7,13 @@ RE::BSEventNotifyControl EventSink::ProcessEvent(const SKSE::CrosshairRefEvent* 
                                                  RE::BSTEventSource<SKSE::CrosshairRefEvent>*) {
     Hooks::crosshair_ref = a_event->crosshairRef;
     if (ModCompatibility::QuickLootMod::GetSingleton()->is_installed) {
-        if (Settings::GetSingleton()->QuickLootSupport) {
-            if (!Hooks::saved_ref) {
-                ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
-            } else if (a_event->crosshairRef && Hooks::saved_ref->GetFormID() != a_event->crosshairRef->GetFormID()) {
-                ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+        if (const auto set = Settings::GetSingleton(); set->QuickLootSupport) {
+            if (!set->HideQLOnlyWield || RE::PlayerCharacter::GetSingleton()->AsActorState()->IsWeaponDrawn()) {
+                if (!Hooks::saved_ref) {
+                    ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+                } else if (a_event->crosshairRef && Hooks::saved_ref->GetFormID() != a_event->crosshairRef->GetFormID()) {
+                    ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(false);
+                }
             }
         } else {
             ModCompatibility::QuickLootMod::GetSingleton()->SetAllowed(true);

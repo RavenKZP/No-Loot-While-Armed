@@ -29,6 +29,7 @@ void Settings::LoadSettings() {
         NoLootPickpocket = ini.GetBoolValue(L"Settings", L"NoLootPickpocket");
 
         QuickLootSupport = ini.GetBoolValue(L"Settings", L"QuickLootSupport");
+        HideQLOnlyWield = ini.GetBoolValue(L"Settings", L"HideQLOnlyWhenWielding");
 
         NoLootFlora = ini.GetBoolValue(L"Settings", L"NoLootFlora");
         NoLootCritter = ini.GetBoolValue(L"Settings", L"NoLootCritter");
@@ -87,6 +88,8 @@ void Settings::SaveSettings() {
     ini.SetBoolValue(L"Settings", L"NoLootPickpocket", NoLootPickpocket);
 
     ini.SetBoolValue(L"Settings", L"QuickLootSupport", QuickLootSupport);
+    ini.SetBoolValue(L"Settings", L"HideQLOnlyWhenWielding", HideQLOnlyWield);
+
 
     ini.SetBoolValue(L"Settings", L"NoLootFlora", NoLootFlora);
     ini.SetBoolValue(L"Settings", L"NoLootCritter", NoLootCritter);
@@ -142,6 +145,7 @@ void Settings::ResetSettings() {
     NoLootPickpocket = true;
 
     QuickLootSupport = true;
+    HideQLOnlyWield = true;
 
     NoLootFlora = true;
     NoLootCritter = true;

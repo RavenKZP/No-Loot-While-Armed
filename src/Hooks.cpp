@@ -301,8 +301,7 @@ namespace Hooks {
 #ifndef NDEBUG
                 logger::info("Inventory owner: {}, formtype {}", a_targetRef->GetName(),
                              RE::FormTypeToString(a_targetRef->GetFormType()));
-                const auto inv = a_targetRef->GetInventory();
-                for (auto& [a, b] : inv) {
+                for (auto& [a, b] : a_targetRef->GetInventory()) {
                     logger::trace("Item {} ({}) formtype {}, count {}", a->GetName(), a->GetFormID(),
                                   RE::FormTypeToString(a->GetFormType()), b.first);
                 }

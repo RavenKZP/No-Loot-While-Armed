@@ -33,6 +33,7 @@ public:
 
     //QuickLoot
     bool QuickLootSupport = true;
+    bool HideQLOnlyWield = true;
 
     // Fauna and Flora
     bool NoLootFlora = true;
