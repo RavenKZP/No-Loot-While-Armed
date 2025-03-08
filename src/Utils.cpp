@@ -1,6 +1,7 @@
 #include "Utils.h"
 
 #include "Hooks.h"
+#include "Settings.h"
 
 std::filesystem::path GetLogPath() {
     const auto logsFolder = SKSE::log::log_directory();
@@ -32,10 +33,10 @@ std::vector<std::string> ReadLogFile() {
 }
 
 void ModCompatibility::QuickLootMod::OnOpeningLootMenu(QuickLoot::Events::OpeningLootMenuEvent* event) {
-    if (!GetSingleton()->IsAllowed()) {
-        event->result = QuickLoot::Events::HandleResult::kStop;
-    } else {
+    if (GetSingleton()->IsAllowed() || Settings::GetSingleton()->HideQLOnlyWield && !RE::PlayerCharacter::GetSingleton()->AsActorState()->IsWeaponDrawn()) {
         Hooks::saved_ref.reset();
+    } else {
+        event->result = QuickLoot::Events::HandleResult::kStop;
     }
 }
 
