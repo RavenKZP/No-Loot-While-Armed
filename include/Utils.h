@@ -7,6 +7,8 @@ const auto mod_name = static_cast<std::string>(SKSE::PluginDeclaration::GetSingl
 std::filesystem::path GetLogPath();
 std::vector<std::string> ReadLogFile();
 
+RE::FormID GetFormIDFromString(const std::string& formEditorId);
+
 namespace Game {
 	bool HasItem(RE::TESObjectREFR* ref, const RE::TESForm* item=nullptr);
 };
@@ -48,7 +50,6 @@ namespace ModCompatibility {
 
     void Install();
 };
-
 
 namespace LogSettings {
 	inline bool log_trace = true;

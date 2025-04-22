@@ -1,5 +1,6 @@
 set(headers ${headers}
 	include/Utils.h
+	include/FormIDReader.h
 	include/PCH.h
 	include/logger.h
 	include/Settings.h

@@ -7,7 +7,7 @@
 class Settings final : public clib_util::singleton::ISingleton<Settings> {
 public:
     void LoadSettings();
-    void SaveSettings();
+    void SaveSettings() const;
     void ResetSettings();
 
     void InitializeDefaultExcludedRaces();
