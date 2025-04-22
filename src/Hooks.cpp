@@ -43,6 +43,11 @@ namespace Hooks {
         }
     }
 
+    static bool IsExcludedRace() {
+        RE::PlayerCharacter* player = RE::PlayerCharacter::GetSingleton();
+        RE::TESRace* playerRace = player->GetRace();
+        return playerRace && Settings::GetSingleton()->excludedRaces.contains(playerRace);
+    }
 
     bool OnActivate() {
         const auto set = Settings::GetSingleton();
@@ -222,6 +227,9 @@ namespace Hooks {
 
     void InputHook::thunk(RE::BSTEventSource<RE::InputEvent*>* a_dispatcher, RE::InputEvent* const* a_event) {
         if (!Settings::GetSingleton()->ModActive || !a_dispatcher || !a_event || !crosshair_ref) {
+            return func(a_dispatcher, a_event);
+        }
+        if (IsExcludedRace()) {
             return func(a_dispatcher, a_event);
         }
         auto first = *a_event;

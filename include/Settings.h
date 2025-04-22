@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_set>
+
 #include "ClibUtil/singleton.hpp"
 
 class Settings final : public clib_util::singleton::ISingleton<Settings> {
@@ -7,6 +9,12 @@ public:
     void LoadSettings();
     void SaveSettings();
     void ResetSettings();
+
+    void InitializeDefaultExcludedRaces();
+    bool AddRaceToExclude(RE::TESRace* race);
+    bool RemoveRaceFromExclude(RE::TESRace* race);
+    bool AddPlayerRaceToExclude();
+    bool RemovePlayerRaceFromExclude();
 
     // Kill Switch
     bool ModActive = true;
@@ -70,6 +78,9 @@ public:
 
     // Leavers, Buttons
     bool NoActivators = true;
+
+    //ExcludedRaces
+    std::unordered_set<RE::TESRace*> excludedRaces;
 
 private:
     const char* setting_path{"Data/SKSE/Plugins/NoLootWhileArmed.ini"};

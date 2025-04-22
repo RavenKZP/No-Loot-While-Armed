@@ -7,6 +7,9 @@
 
 void OnMessage(SKSE::MessagingInterface::Message* message) {
     if (message->type == SKSE::MessagingInterface::kDataLoaded) {
+        Settings::GetSingleton()->LoadSettings();
+        MCP::Register();
+
         ModCompatibility::Install();
         Hooks::Install();
         EventSinks::Install();
@@ -19,7 +22,5 @@ SKSEPluginLoad(const SKSE::LoadInterface* skse) {
     SKSE::Init(skse);
     logger::info("Game version: {}", skse->RuntimeVersion().string());
     SKSE::GetMessagingInterface()->RegisterListener(OnMessage);
-    Settings::GetSingleton()->LoadSettings();
-    MCP::Register();
     return true;
 }

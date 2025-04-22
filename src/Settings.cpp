@@ -2,123 +2,150 @@
 #include "SimpleIni.h"
 
 void Settings::LoadSettings() {
-    CSimpleIniW ini;
+    CSimpleIniA ini;
     ini.SetUnicode();
+    ini.SetMultiKey(true);
 
     if (!std::filesystem::exists(setting_path)) {
         logger::info("No {} file found, creating new with default values", setting_path);
+        ResetSettings();
         SaveSettings();
     } else {
         ini.LoadFile(setting_path);
 
-        ModActive = ini.GetBoolValue(L"Settings", L"ModActive");
+        ModActive = ini.GetBoolValue("Settings", "ModActive");
 
-        Message = ini.GetBoolValue(L"Settings", L"Message");
-        MessageSound = ini.GetBoolValue(L"Settings", L"MessageSound");
+        Message = ini.GetBoolValue("Settings", "Message");
+        MessageSound = ini.GetBoolValue("Settings", "MessageSound");
 
-        AllowActionsInCombat = ini.GetBoolValue(L"Settings", L"AllowActionsInCombat");
-        AutoActionsInCombat = ini.GetBoolValue(L"Settings", L"AutoActionsInCombat");
-        AutoSheatle = ini.GetBoolValue(L"Settings", L"AutoSheatle");
-        AutoActivate = ini.GetBoolValue(L"Settings", L"AutoActivate");
-        // AutoDraw = ini.GetBoolValue(L"Settings", L"AutoDraw");
+        AllowActionsInCombat = ini.GetBoolValue("Settings", "AllowActionsInCombat");
+        AutoActionsInCombat = ini.GetBoolValue("Settings", "AutoActionsInCombat");
+        AutoSheatle = ini.GetBoolValue("Settings", "AutoSheatle");
+        AutoActivate = ini.GetBoolValue("Settings", "AutoActivate");
+        // AutoDraw = ini.GetBoolValue("Settings", "AutoDraw");
 
-        NoMount = ini.GetBoolValue(L"Settings", L"NoMount");
+        NoMount = ini.GetBoolValue("Settings", "NoMount");
 
-        NoLootBody = ini.GetBoolValue(L"Settings", L"NoLootBody");
-        NoLootContainer = ini.GetBoolValue(L"Settings", L"NoLootContainer");
-        NoLootPickpocket = ini.GetBoolValue(L"Settings", L"NoLootPickpocket");
+        NoLootBody = ini.GetBoolValue("Settings", "NoLootBody");
+        NoLootContainer = ini.GetBoolValue("Settings", "NoLootContainer");
+        NoLootPickpocket = ini.GetBoolValue("Settings", "NoLootPickpocket");
 
-        QuickLootSupport = ini.GetBoolValue(L"Settings", L"QuickLootSupport");
-        HideQLOnlyWield = ini.GetBoolValue(L"Settings", L"HideQLOnlyWhenWielding");
+        QuickLootSupport = ini.GetBoolValue("Settings", "QuickLootSupport");
+        HideQLOnlyWield = ini.GetBoolValue("Settings", "HideQLOnlyWhenWielding");
 
-        NoLootFlora = ini.GetBoolValue(L"Settings", L"NoLootFlora");
-        NoLootCritter = ini.GetBoolValue(L"Settings", L"NoLootCritter");
+        NoLootFlora = ini.GetBoolValue("Settings", "NoLootFlora");
+        NoLootCritter = ini.GetBoolValue("Settings", "NoLootCritter");
 
-        NoLootWeapon = ini.GetBoolValue(L"Settings", L"NoLootWeapon");
-        NoLootArmor = ini.GetBoolValue(L"Settings", L"NoLootArmor");
-        NoLootAmmo = ini.GetBoolValue(L"Settings", L"NoLootAmmo");
+        NoLootWeapon = ini.GetBoolValue("Settings", "NoLootWeapon");
+        NoLootArmor = ini.GetBoolValue("Settings", "NoLootArmor");
+        NoLootAmmo = ini.GetBoolValue("Settings", "NoLootAmmo");
 
-        NoLootBook = ini.GetBoolValue(L"Settings", L"NoLootBook");
-        NoLootNote = ini.GetBoolValue(L"Settings", L"NoLootNote");
-        NoLootSpellBook = ini.GetBoolValue(L"Settings", L"NoLootSpellBook");
-        NoLootSkillBook = ini.GetBoolValue(L"Settings", L"NoLootSkillBook");
-        NoLootScroll = ini.GetBoolValue(L"Settings", L"NoLootScroll");
+        NoLootBook = ini.GetBoolValue("Settings", "NoLootBook");
+        NoLootNote = ini.GetBoolValue("Settings", "NoLootNote");
+        NoLootSpellBook = ini.GetBoolValue("Settings", "NoLootSpellBook");
+        NoLootSkillBook = ini.GetBoolValue("Settings", "NoLootSkillBook");
+        NoLootScroll = ini.GetBoolValue("Settings", "NoLootScroll");
 
-        NoLootPotion = ini.GetBoolValue(L"Settings", L"NoLootPotion");
-        NoLootPoison = ini.GetBoolValue(L"Settings", L"NoLootPoison");
-        NoLootFood = ini.GetBoolValue(L"Settings", L"NoLootFood");
-        NoLootIngredient = ini.GetBoolValue(L"Settings", L"NoLootIngredient");
+        NoLootPotion = ini.GetBoolValue("Settings", "NoLootPotion");
+        NoLootPoison = ini.GetBoolValue("Settings", "NoLootPoison");
+        NoLootFood = ini.GetBoolValue("Settings", "NoLootFood");
+        NoLootIngredient = ini.GetBoolValue("Settings", "NoLootIngredient");
 
-        NoLootKey = ini.GetBoolValue(L"Settings", L"NoLootKey");
-        NoLootSoulGem = ini.GetBoolValue(L"Settings", L"NoLootSoulGem");
-        NoLootMisc = ini.GetBoolValue(L"Settings", L"NoLootMisc");
-        NoLootGold = ini.GetBoolValue(L"Settings", L"NoLootGold");
-        NoLootLockpick = ini.GetBoolValue(L"Settings", L"NoLootLockpick");
-        NoLootLight = ini.GetBoolValue(L"Settings", L"NoLootLight");
+        NoLootKey = ini.GetBoolValue("Settings", "NoLootKey");
+        NoLootSoulGem = ini.GetBoolValue("Settings", "NoLootSoulGem");
+        NoLootMisc = ini.GetBoolValue("Settings", "NoLootMisc");
+        NoLootGold = ini.GetBoolValue("Settings", "NoLootGold");
+        NoLootLockpick = ini.GetBoolValue("Settings", "NoLootLockpick");
+        NoLootLight = ini.GetBoolValue("Settings", "NoLootLight");
 
-        NoDoor = ini.GetBoolValue(L"Settings", L"NoDoor");
-        NoFurniture = ini.GetBoolValue(L"Settings", L"NoFurniture");
-        NoActivators = ini.GetBoolValue(L"Settings", L"NoActivators");
+        NoDoor = ini.GetBoolValue("Settings", "NoDoor");
+        NoFurniture = ini.GetBoolValue("Settings", "NoFurniture");
+        NoActivators = ini.GetBoolValue("Settings", "NoActivators");
+
+        CSimpleIniA::TNamesDepend raceNames;
+        ini.GetAllValues("ExcludedRaces", "ExcludeRace", raceNames);
+
+        for (const auto& raceName : raceNames) {
+            auto* form = RE::TESForm::LookupByEditorID(raceName.pItem);
+            if (form) {
+                if (auto* race = form->As<RE::TESRace>()) {
+                    excludedRaces.insert(race);
+                    logger::info("Excluded race: {}", raceName.pItem);
+                }
+            } else {
+                logger::warn("Race '{}' not found!", raceName.pItem);
+            }
+        }
 
         logger::info("Settings Loaded");
     }
 }
 
 void Settings::SaveSettings() {
-    CSimpleIniW ini;
+    CSimpleIniA ini;
     ini.SetUnicode();
+    ini.SetMultiKey(true);
     ini.LoadFile(setting_path);
     ini.Reset();
-    ini.SetBoolValue(L"Settings", L"ModActive", ModActive);
+    ini.SetBoolValue("Settings", "ModActive", ModActive);
 
-    ini.SetBoolValue(L"Settings", L"Message", Message);
-    ini.SetBoolValue(L"Settings", L"MessageSound", MessageSound);
+    ini.SetBoolValue("Settings", "Message", Message);
+    ini.SetBoolValue("Settings", "MessageSound", MessageSound);
 
-    ini.SetBoolValue(L"Settings", L"AllowActionsInCombat", AllowActionsInCombat);
-    ini.SetBoolValue(L"Settings", L"AutoActionsInCombat", AutoActionsInCombat);
+    ini.SetBoolValue("Settings", "AllowActionsInCombat", AllowActionsInCombat);
+    ini.SetBoolValue("Settings", "AutoActionsInCombat", AutoActionsInCombat);
 
-    ini.SetBoolValue(L"Settings", L"AutoSheatle", AutoSheatle);
-    ini.SetBoolValue(L"Settings", L"AutoActivate", AutoActivate);
-    // ini.SetBoolValue(L"Settings", L"AutoDraw", AutoDraw);
+    ini.SetBoolValue("Settings", "AutoSheatle", AutoSheatle);
+    ini.SetBoolValue("Settings", "AutoActivate", AutoActivate);
+    // ini.SetBoolValue("Settings", "AutoDraw", AutoDraw);
 
-    ini.SetBoolValue(L"Settings", L"NoMount", NoMount);
+    ini.SetBoolValue("Settings", "NoMount", NoMount);
 
-    ini.SetBoolValue(L"Settings", L"NoLootBody", NoLootBody);
-    ini.SetBoolValue(L"Settings", L"NoLootContainer", NoLootContainer);
-    ini.SetBoolValue(L"Settings", L"NoLootPickpocket", NoLootPickpocket);
+    ini.SetBoolValue("Settings", "NoLootBody", NoLootBody);
+    ini.SetBoolValue("Settings", "NoLootContainer", NoLootContainer);
+    ini.SetBoolValue("Settings", "NoLootPickpocket", NoLootPickpocket);
 
-    ini.SetBoolValue(L"Settings", L"QuickLootSupport", QuickLootSupport);
-    ini.SetBoolValue(L"Settings", L"HideQLOnlyWhenWielding", HideQLOnlyWield);
+    ini.SetBoolValue("Settings", "QuickLootSupport", QuickLootSupport);
+    ini.SetBoolValue("Settings", "HideQLOnlyWhenWielding", HideQLOnlyWield);
 
 
-    ini.SetBoolValue(L"Settings", L"NoLootFlora", NoLootFlora);
-    ini.SetBoolValue(L"Settings", L"NoLootCritter", NoLootCritter);
+    ini.SetBoolValue("Settings", "NoLootFlora", NoLootFlora);
+    ini.SetBoolValue("Settings", "NoLootCritter", NoLootCritter);
 
-    ini.SetBoolValue(L"Settings", L"NoLootWeapon", NoLootWeapon);
-    ini.SetBoolValue(L"Settings", L"NoLootArmor", NoLootArmor);
-    ini.SetBoolValue(L"Settings", L"NoLootAmmo", NoLootAmmo);
+    ini.SetBoolValue("Settings", "NoLootWeapon", NoLootWeapon);
+    ini.SetBoolValue("Settings", "NoLootArmor", NoLootArmor);
+    ini.SetBoolValue("Settings", "NoLootAmmo", NoLootAmmo);
 
-    ini.SetBoolValue(L"Settings", L"NoLootBook", NoLootBook);
-    ini.SetBoolValue(L"Settings", L"NoLootNote", NoLootNote);
-    ini.SetBoolValue(L"Settings", L"NoLootSpellBook", NoLootSpellBook);
-    ini.SetBoolValue(L"Settings", L"NoLootSkillBook", NoLootSkillBook);
-    ini.SetBoolValue(L"Settings", L"NoLootScroll", NoLootScroll);
+    ini.SetBoolValue("Settings", "NoLootBook", NoLootBook);
+    ini.SetBoolValue("Settings", "NoLootNote", NoLootNote);
+    ini.SetBoolValue("Settings", "NoLootSpellBook", NoLootSpellBook);
+    ini.SetBoolValue("Settings", "NoLootSkillBook", NoLootSkillBook);
+    ini.SetBoolValue("Settings", "NoLootScroll", NoLootScroll);
 
-    ini.SetBoolValue(L"Settings", L"NoLootPotion", NoLootPotion);
-    ini.SetBoolValue(L"Settings", L"NoLootPoison", NoLootPoison);
-    ini.SetBoolValue(L"Settings", L"NoLootFood", NoLootFood);
-    ini.SetBoolValue(L"Settings", L"NoLootIngredient", NoLootIngredient);
+    ini.SetBoolValue("Settings", "NoLootPotion", NoLootPotion);
+    ini.SetBoolValue("Settings", "NoLootPoison", NoLootPoison);
+    ini.SetBoolValue("Settings", "NoLootFood", NoLootFood);
+    ini.SetBoolValue("Settings", "NoLootIngredient", NoLootIngredient);
 
-    ini.SetBoolValue(L"Settings", L"NoLootKey", NoLootKey);
-    ini.SetBoolValue(L"Settings", L"NoLootSoulGem", NoLootSoulGem);
-    ini.SetBoolValue(L"Settings", L"NoLootMisc", NoLootMisc);
-    ini.SetBoolValue(L"Settings", L"NoLootGold", NoLootGold);
-    ini.SetBoolValue(L"Settings", L"NoLootLockpick", NoLootLockpick);
-    ini.SetBoolValue(L"Settings", L"NoLootLight", NoLootLight);
+    ini.SetBoolValue("Settings", "NoLootKey", NoLootKey);
+    ini.SetBoolValue("Settings", "NoLootSoulGem", NoLootSoulGem);
+    ini.SetBoolValue("Settings", "NoLootMisc", NoLootMisc);
+    ini.SetBoolValue("Settings", "NoLootGold", NoLootGold);
+    ini.SetBoolValue("Settings", "NoLootLockpick", NoLootLockpick);
+    ini.SetBoolValue("Settings", "NoLootLight", NoLootLight);
 
-    ini.SetBoolValue(L"Settings", L"NoDoor", NoDoor);
-    ini.SetBoolValue(L"Settings", L"NoFurniture", NoFurniture);
-    ini.SetBoolValue(L"Settings", L"NoActivators", NoActivators);
+    ini.SetBoolValue("Settings", "NoDoor", NoDoor);
+    ini.SetBoolValue("Settings", "NoFurniture", NoFurniture);
+    ini.SetBoolValue("Settings", "NoActivators", NoActivators);
+
+    for (const auto* race : excludedRaces) {
+        if (race) {
+            const char* editorID = race->GetFormEditorID();
+            if (editorID && *editorID) {
+                ini.SetValue("ExcludedRaces", "ExcludeRace", editorID);
+            }
+        }
+    }
 
     ini.SaveFile(setting_path);
 
@@ -177,5 +204,58 @@ void Settings::ResetSettings() {
     NoFurniture = true;
     NoActivators = true;
 
+    InitializeDefaultExcludedRaces();
+
     logger::info("Settings Reseted");
+}
+
+void Settings::InitializeDefaultExcludedRaces() {
+    excludedRaces.clear();
+
+     static const std::string raceNames[] = {"WerewolfBeastRace",     "DragonRace",    "DLC1VampireBeastRace",
+                                             "DLC2WerebearBeastRace", "NecroLichRace", "Kata_DragonidRace"};
+
+     for (const auto& raceName : raceNames) {
+         auto* form = RE::TESForm::LookupByEditorID(raceName);
+         if (form) {
+             if (auto* race = form->As<RE::TESRace>()) {
+                 excludedRaces.insert(race);
+                 logger::info("Excluded race: {}", raceName);
+             }
+         } else {
+             logger::warn("Race '{}' not found!", raceName);
+         }
+     }
+ }
+
+bool Settings::AddRaceToExclude(RE::TESRace* race) {
+    if (race) {
+        excludedRaces.insert(race);
+        logger::info("Added race to exclusion: {}", race->GetFormEditorID());
+        return true;
+    }
+    return false;
+}
+
+bool Settings::RemoveRaceFromExclude(RE::TESRace* race) {
+    if (race) {
+        auto erased = excludedRaces.erase(race);
+        if (erased > 0) {
+            logger::info("Removed race from exclusion: {}", race->GetFormEditorID());
+            return true;
+        }
+    }
+    return false;
+}
+
+bool Settings::AddPlayerRaceToExclude() {
+    auto* player = RE::PlayerCharacter::GetSingleton();
+    if (!player) return false;
+    return AddRaceToExclude(player->GetRace());
+}
+
+bool Settings::RemovePlayerRaceFromExclude() {
+    auto* player = RE::PlayerCharacter::GetSingleton();
+    if (!player) return false;
+    return RemoveRaceFromExclude(player->GetRace());
 }
