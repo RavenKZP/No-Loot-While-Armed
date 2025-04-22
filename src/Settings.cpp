@@ -1,5 +1,6 @@
 #include "Settings.h"
 #include "SimpleIni.h"
+#include "Utils.h"
 
 void Settings::LoadSettings() {
     CSimpleIniA ini;
@@ -66,22 +67,20 @@ void Settings::LoadSettings() {
         ini.GetAllValues("ExcludedRaces", "ExcludeRace", raceNames);
 
         for (const auto& raceName : raceNames) {
-            auto* form = RE::TESForm::LookupByEditorID(raceName.pItem);
-            if (form) {
-                if (auto* race = form->As<RE::TESRace>()) {
-                    excludedRaces.insert(race);
+            if (const auto a_raceID = GetFormIDFromString(raceName.pItem)) {
+                if (auto* a_race = RE::TESForm::LookupByID<RE::TESRace>(a_raceID)) {
+                    excludedRaces.insert(a_race);
                     logger::info("Excluded race: {}", raceName.pItem);
+                    continue;
                 }
-            } else {
-                logger::warn("Race '{}' not found!", raceName.pItem);
             }
+            logger::warn("Race '{}' not found!", raceName.pItem);
         }
-
         logger::info("Settings Loaded");
     }
 }
 
-void Settings::SaveSettings() {
+void Settings::SaveSettings() const {
     CSimpleIniA ini;
     ini.SetUnicode();
     ini.SetMultiKey(true);
@@ -239,7 +238,7 @@ bool Settings::AddRaceToExclude(RE::TESRace* race) {
 
 bool Settings::RemoveRaceFromExclude(RE::TESRace* race) {
     if (race) {
-        auto erased = excludedRaces.erase(race);
+        const auto erased = excludedRaces.erase(race);
         if (erased > 0) {
             logger::info("Removed race from exclusion: {}", race->GetFormEditorID());
             return true;
@@ -249,13 +248,13 @@ bool Settings::RemoveRaceFromExclude(RE::TESRace* race) {
 }
 
 bool Settings::AddPlayerRaceToExclude() {
-    auto* player = RE::PlayerCharacter::GetSingleton();
+    const auto* player = RE::PlayerCharacter::GetSingleton();
     if (!player) return false;
     return AddRaceToExclude(player->GetRace());
 }
 
 bool Settings::RemovePlayerRaceFromExclude() {
-    auto* player = RE::PlayerCharacter::GetSingleton();
+    const auto* player = RE::PlayerCharacter::GetSingleton();
     if (!player) return false;
     return RemoveRaceFromExclude(player->GetRace());
 }

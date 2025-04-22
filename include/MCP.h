@@ -2,6 +2,7 @@
 
 namespace MCP {
 	void __stdcall RenderSettings();
+	void __stdcall RenderExcludedRaces();
 	void __stdcall RenderLog();
     void Register();
 

@@ -105,6 +105,7 @@ void MCP::Register() {
     SKSEMenuFramework::SetSection("No Loot When Armed");
     SettingsMCP::CreateSettingsSections();
     SKSEMenuFramework::AddSectionItem("Settings", RenderSettings);
+	SKSEMenuFramework::AddSectionItem("Excluded Races", RenderExcludedRaces);
 #ifndef NDEBUG
     SKSEMenuFramework::AddSectionItem("Log", RenderLog);
 #endif
@@ -154,6 +155,44 @@ void __stdcall MCP::RenderSettings() {
     if (set->ModActive == false) {
         ImGui::PopItemFlag();
         ImGui::PopStyleVar();
+    }
+}
+
+void __stdcall MCP::RenderExcludedRaces()
+{
+	constexpr ImGuiTableFlags table_flags = ImGuiTableFlags_Resizable | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_SizingStretchProp | ImGuiTableFlags_Borders | ImGuiTableFlags_RowBg;
+	const auto& excludedRaces = Settings::GetSingleton()->excludedRaces;
+
+	if (ImGui::Button("Add Current Race")) {
+		Settings::GetSingleton()->AddPlayerRaceToExclude();
+    }
+	ImGui::SameLine();
+	if (ImGui::Button("Remove Current Race")) {
+		Settings::GetSingleton()->RemovePlayerRaceFromExclude();
+    }
+
+    ImGui::Text("");
+    ImGui::Text("Excluded Races:");
+
+    if (excludedRaces.empty()) {
+        ImGui::Text("None");
+		return;
+	}
+
+    if (ImGui::BeginTable("#excludedraces", 1, table_flags)) {
+        ImGui::TableNextRow();
+        ImGui::TableNextColumn();
+		for (const auto& exclude : excludedRaces) {
+			if (!exclude) continue;
+			if (const auto a_raceName = exclude->GetName(); a_raceName && a_raceName[0] != '\0') {
+			    ImGui::Text(a_raceName);
+			}
+			else {
+			    ImGui::Text(exclude->GetFormEditorID());
+			}
+		}
+
+        ImGui::EndTable();
     }
 }
 
